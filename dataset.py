@@ -50,6 +50,6 @@ def create_dataset(augmentation: bool):
 
     if augmentation:
         #Do whatever is necessary for augmentation
-        log.info("Augmentation should be performed (but is not yet implemented)")
+        log.warning("Augmentation should be performed (but is not yet implemented)")
 
     return (train_ds, val_ds)

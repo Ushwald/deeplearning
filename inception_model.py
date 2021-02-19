@@ -1,10 +1,23 @@
 import tensorflow as tf
 from tensorflow import keras
+import logger
+
+log = logger.setup_logger(__name__)
 
 image_size = (180, 180)
 batch_size = 32
 
+
 def create_model(config, train_ds, val_ds):
+    #specify optimizer:
+    if config.activation == 'leaky':
+        #Ryan; do whatever it takes to implement leaky ReLu
+        log.warning("Leaky ReLu is specified, but this is not yet implemented")
+
+    if config.optimizer == 'sgdm':
+        # Oscar; do whatever it takes to implement Stochastic Gradient Descent with Momentum
+        log.warning("SGD with momentum is specified, but this is not yet implemented")
+
     model = tf.keras.applications.InceptionV3(
         include_top=True,
         weights=None,
@@ -20,7 +33,7 @@ def create_model(config, train_ds, val_ds):
     #keras.utils.plot_model(model, show_shapes=True)
 
     callbacks = [
-        keras.callbacks.ModelCheckpoint("save_at_{epoch}.h5"),
+        keras.callbacks.ModelCheckpoint("model_checkpoints/save_at_{epoch}.h5"),
     ]
     model.compile(
         optimizer=keras.optimizers.Adam(1e-3),

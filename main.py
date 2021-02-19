@@ -9,7 +9,7 @@ def main():
     config = setup_argument_parser()
     log.info("Starting...")
     log.info("Model will train with following parameters:")
-    log.info(config.epochs)
+    log.info(config)
 
     #Create the dataset:
     train_ds, val_ds = create_dataset(config.augmentation)
