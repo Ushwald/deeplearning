@@ -1,3 +1,9 @@
+
+#specific to model training:
+*.h5
+#Specific to vim:
+*.swp
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]

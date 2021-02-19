@@ -29,6 +29,7 @@ train_ds = tf.keras.preprocessing.image_dataset_from_directory(
     "PetImages",
     validation_split=0.2,
     subset="training",
+    label_mode = "categorical",
     seed=1337,
     image_size=image_size,
     batch_size=batch_size,
@@ -37,6 +38,7 @@ val_ds = tf.keras.preprocessing.image_dataset_from_directory(
     "PetImages",
     validation_split=0.2,
     subset="validation",
+    label_mode = "categorical",
     seed=1337,
     image_size=image_size,
     batch_size=batch_size,
@@ -49,14 +51,34 @@ for images, labels in train_ds.take(1):
     for i in range(9):
         ax = plt.subplot(3, 3, i + 1)
         plt.imshow(images[i].numpy().astype("uint8"))
-        plt.title(int(labels[i]))
+        #plt.title(int(labels[i]))
         plt.axis("off")
 
 print(train_ds.class_names)
+data_augmentation = keras.Sequential(
+    [
+        layers.experimental.preprocessing.RandomFlip("horizontal"),
+        layers.experimental.preprocessing.RandomFlip("horizontal"),
+        #layers.experimental.preprocessing.RandomRotation(0.0),
+    ]
+)
 
 
-augmented_train_ds = train_ds.map(
-  lambda x, y: (x, y))
+#augmented_train_ds = train_ds.map(
+#  lambda x, y: (data_augmentation(x, training=True), y))
+
+def map_fun(x, y):
+    print("SET:")
+    print(x)
+    print(y)
+
+train_ds = train_ds.map(lambda x, y: ((x, y)))                       
+val_ds = val_ds.map(lambda x, y: ((x, y)))
+
+#train_ds = train_ds.map(map_fun)                       
+#val_ds = val_ds.map(map_fun)
+
+print(train_ds.take(1))
 
 train_ds = train_ds.prefetch(buffer_size=32)
 val_ds = val_ds.prefetch(buffer_size=32)
@@ -67,14 +89,13 @@ model = tf.keras.applications.InceptionV3(
     input_tensor=None,
     input_shape=image_size + (3,),
     pooling=None,
-    classes=(2),
+    classes=2,
     classifier_activation="softmax",
 )
 
 
 #make_model(input_shape=image_size + (3,), num_classes=2)
 #keras.utils.plot_model(model, show_shapes=True)
-
 epochs = 10
 
 callbacks = [
