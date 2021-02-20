@@ -38,12 +38,16 @@ def create_model(config, train_ds, val_ds, kfold = 0):
     #make_model(input_shape=image_size + (3,), num_classes=2)
     #keras.utils.plot_model(model, show_shapes=True)
 
-    crossvalfoldnrstr = ''
+  
     if config.crossvalidation:
-        crossvalfoldnrstr = f"Foldnr{kfold}_"
-    callbacks = [
-        keras.callbacks.ModelCheckpoint("model_checkpoints/{crossvalfoldnrstr}{config.epochs}Epochs_{config.activation}Activation-{config.optimizer}Optimizer-{config.augmentation}Augmentation_save_at_{epoch}.h5"),
-    ]
+        callbacks = [
+            keras.callbacks.ModelCheckpoint("model_checkpoints/Foldnr{kfold}_{config.epochs}Epochs_{config.activation}Activation_{config.optimizer}Optimizer-{config.augmentation}Augmentation_save_at_{epoch}.h5"),
+        ]
+    else:
+        callbacks = [
+            keras.callbacks.ModelCheckpoint("model_checkpoints/{config.epochs}Epochs_{config.activation}Activation_{config.optimizer}Optimizer-{config.augmentation}Augmentation_save_at_{epoch}.h5"),
+        ]
+
 
     if config.optimizer == 'sgdm':
         model.compile(
