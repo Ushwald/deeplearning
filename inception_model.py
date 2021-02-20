@@ -10,7 +10,7 @@ image_size = (180, 180)
 batch_size = 32
 
 
-def create_model(config, train_ds, val_ds):
+def create_model(config, train_ds, val_ds, kfold = 0):
    
 
     if config.activation == 'other':
@@ -38,14 +38,17 @@ def create_model(config, train_ds, val_ds):
     #make_model(input_shape=image_size + (3,), num_classes=2)
     #keras.utils.plot_model(model, show_shapes=True)
 
+    crossvalfoldnrstr = ''
+    if config.crossvalidation:
+        crossvalfoldnrstr = f"Foldnr{kfold}_"
     callbacks = [
-        keras.callbacks.ModelCheckpoint("model_checkpoints/save_at_{epoch}.h5"),
+        keras.callbacks.ModelCheckpoint("model_checkpoints/{crossvalfoldnrstr}{config.epochs}Epochs_{config.activation}Activation-{config.optimizer}Optimizer-{config.augmentation}Augmentation_save_at_{epoch}.h5"),
     ]
 
     if config.optimizer == 'sgdm':
         model.compile(
             optimizer=tf.keras.optimizers.SGD(
-                learning_rate=0.045, momentum=0.3, nesterov=False, name='SGD'
+                learning_rate=config.learningrate, momentum=config.momentum, nesterov=False, name='SGD'
                 ),
             loss="binary_crossentropy",
             metrics=["accuracy"],
@@ -53,7 +56,7 @@ def create_model(config, train_ds, val_ds):
     else:
          model.compile(
             tf.keras.optimizers.RMSprop(
-            learning_rate=0.045, rho=0.9, momentum=0.0, epsilon=1.0, centered=False,
+            learning_rate=config.learningrate, rho=0.9, momentum=config.momentum, epsilon=1.0, centered=False,
                 name='RMSprop'
                 ),
             loss="binary_crossentropy",
