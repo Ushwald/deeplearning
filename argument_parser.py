@@ -12,3 +12,4 @@ def setup_argument_parser():
     parser.add_argument("--momentum", help = "Momentum specified in the respective optimizer", type = float, default = 0.0)
 
     return parser.parse_args()
+    
