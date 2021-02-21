@@ -10,7 +10,7 @@ image_size = (180, 180)
 batch_size = 32
 
 
-def create_model(config, train_ds, val_ds, kfold = 0):
+def create_model(config, train_ds, val_ds, kfold = 10):
    
 
     if config.activation == 'other':
@@ -41,11 +41,11 @@ def create_model(config, train_ds, val_ds, kfold = 0):
   
     if config.crossvalidation:
         callbacks = [
-            keras.callbacks.ModelCheckpoint("model_checkpoints/Foldnr{kfold}_{config.epochs}Epochs_{config.activation}Activation_{config.optimizer}Optimizer-{config.augmentation}Augmentation_save_at_{epoch}.h5"),
+            keras.callbacks.ModelCheckpoint(f"model_checkpoints/Foldnr{kfold}_{config.epochs}Epochs_{config.activation}Activation_{config.optimizer}Optimizer-{config.augmentation}Augmentation_save_at_{config.epochs}.h5"),
         ]
     else:
         callbacks = [
-            keras.callbacks.ModelCheckpoint("model_checkpoints/{config.epochs}Epochs_{config.activation}Activation_{config.optimizer}Optimizer-{config.augmentation}Augmentation_save_at_{epoch}.h5"),
+            keras.callbacks.ModelCheckpoint(f"model_checkpoints/{config.epochs}Epochs_{config.activation}Activation_{config.optimizer}Optimizer-{config.augmentation}Augmentation_save_at_{epoch}.h5"),
         ]
 
 
