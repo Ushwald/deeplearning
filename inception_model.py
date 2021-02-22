@@ -10,10 +10,10 @@ image_size = (180, 180)
 batch_size = 32
 
 
-def create_model(config, train_ds, val_ds, kfold = 10):
+def create_model(config, train_ds, val_ds, kfold = 0):
    
 
-    if config.activation == 'other':
+    if config.activation == 'elu':
         model = InceptionCustom(
             include_top=True,
             weights=None,
@@ -40,12 +40,14 @@ def create_model(config, train_ds, val_ds, kfold = 10):
 
   
     if config.crossvalidation:
+        tmp = f"model_checkpoints/Foldnr{kfold}_{config.epochs}Epochs_{config.activation}Activation_{config.optimizer}Optimizer-{config.augmentation}Augmentation_lrate{config.learningrate}_mom{config.momentum}_"
         callbacks = [
-            keras.callbacks.ModelCheckpoint(f"model_checkpoints/Foldnr{kfold}_{config.epochs}Epochs_{config.activation}Activation_{config.optimizer}Optimizer-{config.augmentation}Augmentation_save_at_{config.epochs}.h5"),
+            keras.callbacks.ModelCheckpoint(tmp + "save_at_{epoch}.h5", period = 50),
         ]
     else:
+        tmp = f"model_checkpoints/{config.epochs}Epochs_{config.activation}Activation_{config.optimizer}Optimizer-{config.augmentation}Augmentation_lrate{config.learningrate}_mom{config.momentum}_"
         callbacks = [
-            keras.callbacks.ModelCheckpoint(f"model_checkpoints/{config.epochs}Epochs_{config.activation}Activation_{config.optimizer}Optimizer-{config.augmentation}Augmentation_save_at_{epoch}.h5"),
+            keras.callbacks.ModelCheckpoint(tmp + "save_at_{epoch}.h5", period = 50),
         ]
 
 
@@ -58,7 +60,7 @@ def create_model(config, train_ds, val_ds, kfold = 10):
             metrics=["accuracy"],
         )
     else:
-         model.compile(
+        model.compile(
             tf.keras.optimizers.RMSprop(
             learning_rate=config.learningrate, rho=0.9, momentum=config.momentum, epsilon=1.0, centered=False,
                 name='RMSprop'
@@ -66,16 +68,20 @@ def create_model(config, train_ds, val_ds, kfold = 10):
             loss="binary_crossentropy",
             metrics=["accuracy"],
         )
-
+       
     # train the model and record the history of relevant data over the epochs
     hist = model.fit(
         train_ds, epochs=config.epochs, callbacks=callbacks, validation_data=val_ds,
     )
     log.info("Training done")                                                   
-                                                                                
-    log.info("Saving history of loss...")                                       
-    hist_df = pd.DataFrame.from_dict(hist.history)                           
-    hist_df.to_csv(f"./model_training_history/{config.epochs}Epochs_{config.activation}Activation-{config.optimizer}Optimizer-{config.augmentation}Augmentation-history.csv")  
 
+
+    log.info("Saving history of loss...")                                       
+    hist_df = pd.DataFrame.from_dict(hist.history) 
+    if config.crossvalidation:
+        hist_df.to_csv(f"./model_training_history/Foldnr{kfold}_{config.epochs}Epochs_{config.activation}Activation-{config.optimizer}Optimizer-{config.augmentation}Augmentation_lrate{config.learningrate}_mom{config.momentum}-history.csv")  
+    else:
+        hist_df.to_csv(f"./model_training_history/{config.epochs}Epochs_{config.activation}Activation-{config.optimizer}Optimizer-{config.augmentation}Augmentation_lrate{config.learningrate}_mom{config.momentum}-history.csv")  
+    return model
     
     

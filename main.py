@@ -15,7 +15,7 @@ def main():
 
     #Create the dataset:
     if not config.crossvalidation:
-        train_ds, val_ds = create_dataset(config.augmentation)
+        train_ds, val_ds = create_dataset(config)
         model = inception.create_model(config, train_ds, val_ds)
     else:
         # Crossvalidation comes down to using a different dataset generation system

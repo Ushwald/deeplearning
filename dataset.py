@@ -28,16 +28,18 @@ def create_dataset(config, val_split = 0.2):
     image_size = (180, 180)
     batch_size = 32
 
-    if not config.crossvalidation:
+    if config.crossvalidation:
+        log.warning("Crossvalidation is used, but not implemented in this way, turn around now!")    
+    else:
         train_ds = tf.keras.preprocessing.image_dataset_from_directory(
-            "PetImages",
-            validation_split=val_split,
-            subset="training",
-            label_mode = "categorical",
-            seed=1337,
-            image_size=image_size,
-            batch_size=batch_size,
-        )
+                "PetImages",
+                validation_split=val_split,
+                subset="training",
+                label_mode = "categorical",
+                seed=1337,
+                image_size=image_size,
+                batch_size=batch_size,
+            )
         val_ds = tf.keras.preprocessing.image_dataset_from_directory(
             "PetImages",
             validation_split=val_split,
@@ -47,15 +49,6 @@ def create_dataset(config, val_split = 0.2):
             image_size=image_size,
             batch_size=batch_size,
         )
-    else:
-        train_ds = tf.keras.preprocessing.image_dataset_from_directory(
-            "PetImages",
-            label_mode = "categorical",
-            seed=1337,
-            image_size=image_size,
-            batch_size=batch_size,
-        )
-        val_ds = "This is not a real dataset"
 
     if config.augmentation:
         #Do whatever is necessary for augmentation
