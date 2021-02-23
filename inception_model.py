@@ -13,7 +13,7 @@ batch_size = 32
 def create_model(config, train_ds, val_ds, kfold = 0):
    
 
-    if config.activation == 'elu':
+    if config.elu:
         model = InceptionCustom(
             include_top=True,
             weights=None,
@@ -22,7 +22,7 @@ def create_model(config, train_ds, val_ds, kfold = 0):
             pooling=None,
             classes=2,
             classifier_activation='softmax',
-            act=config.activation
+            act='elu'   
         )
     else:
         model = tf.keras.applications.InceptionV3(
@@ -40,18 +40,18 @@ def create_model(config, train_ds, val_ds, kfold = 0):
 
   
     if config.crossvalidation:
-        tmp = f"model_checkpoints/Foldnr{kfold}_{config.epochs}Epochs_{config.activation}Activation_{config.optimizer}Optimizer-{config.augmentation}Augmentation_lrate{config.learningrate}_mom{config.momentum}_"
+        tmp = f"model_checkpoints/Foldnr{kfold}_{config.epochs}Epochs_Elu{config.elu}_sgdm{config.sgdm}_Augmentation_lrate{config.learningrate}_mom{config.momentum}_"
         callbacks = [
             keras.callbacks.ModelCheckpoint(tmp + "save_at_{epoch}.h5", period = 50),
         ]
     else:
-        tmp = f"model_checkpoints/{config.epochs}Epochs_{config.activation}Activation_{config.optimizer}Optimizer-{config.augmentation}Augmentation_lrate{config.learningrate}_mom{config.momentum}_"
+        tmp = f"model_checkpoints/{config.epochs}Epochs_Elu{config.elu}_sgdm{config.sgdm}-{config.augmentation}Augmentation_lrate{config.learningrate}_mom{config.momentum}_"
         callbacks = [
             keras.callbacks.ModelCheckpoint(tmp + "save_at_{epoch}.h5", period = 50),
         ]
 
 
-    if config.optimizer == 'sgdm':
+    if config.sgdm:
         model.compile(
             optimizer=tf.keras.optimizers.SGD(
                 learning_rate=config.learningrate, momentum=config.momentum, nesterov=False, name='SGD'
@@ -79,9 +79,9 @@ def create_model(config, train_ds, val_ds, kfold = 0):
     log.info("Saving history of loss...")                                       
     hist_df = pd.DataFrame.from_dict(hist.history) 
     if config.crossvalidation:
-        hist_df.to_csv(f"./model_training_history/Foldnr{kfold}_{config.epochs}Epochs_{config.activation}Activation-{config.optimizer}Optimizer-{config.augmentation}Augmentation_lrate{config.learningrate}_mom{config.momentum}-history.csv")  
+        hist_df.to_csv(f"./model_training_history/Foldnr{kfold}_{config.epochs}Epochs_Elu{config.elu}_sgdm{config.sgdm}-{config.augmentation}Augmentation_lrate{config.learningrate}_mom{config.momentum}-history.csv")  
     else:
-        hist_df.to_csv(f"./model_training_history/{config.epochs}Epochs_{config.activation}Activation-{config.optimizer}Optimizer-{config.augmentation}Augmentation_lrate{config.learningrate}_mom{config.momentum}-history.csv")  
+        hist_df.to_csv(f"./model_training_history/{config.epochs}Epochs_Elu{config.elu}_sgdm{config.sgdm}-{config.augmentation}Augmentation_lrate{config.learningrate}_mom{config.momentum}-history.csv")  
     return model
     
     

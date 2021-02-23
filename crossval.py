@@ -67,7 +67,7 @@ def evaluate(config):
     results = results / 5.0
     #results = dict(zip(model.metrics_names,results.tolist()))    
     crossval_df = pd.DataFrame(results.tolist()) 
-    crossval_df.to_csv(f"./crossvalidation_results/{config.epochs}Epochs_{config.activation}Activation-{config.optimizer}Optimizer-{config.augmentation}Augmentation_lrate{config.learningrate}_mom{config.momentum}-crossvalidation_results.csv")  
+    crossval_df.to_csv(f"./crossvalidation_results/{config.epochs}Epochs_Elu{config.elu}_sgdm{config.sgdm}-{config.augmentation}Augmentation_lrate{config.learningrate}_mom{config.momentum}-crossvalidation_results.csv")  
 
         
 
