@@ -33,8 +33,8 @@ Optimizer-{config.augmentation}Augmentation_lrate{config.learningrate}_mom{confi
             accuracy = data["accuracy"]
             val_accuracy = data["val_accuracy"]
             epochs_range = range(len(data.index))
-            ax.plot(epochs_range, accuracy, label="training loss", linestyle="dotted",color = palette[kfold])
-            ax.plot(epochs_range, val_accuracy, label="validation loss", linestyle="dashed", color = palette[kfold])
+            ax.plot(epochs_range, accuracy, label="training accuracy", linestyle="dotted",color = palette[kfold])
+            ax.plot(epochs_range, val_accuracy, label="validation accuracy", linestyle="dashed", color = palette[kfold])
 
     ax.set(
         xlabel="epoch", ylabel="Accuracy", title="Training and Validation Accuracy"
@@ -75,8 +75,8 @@ Optimizer-{config.augmentation}Augmentation_lrate{config.learningrate}_mom{confi
         log.error("kfold crossvalidation history csv files were not successfully opened")
 
     epochs_range = range(len(data.index))
-    loss = data["loss"]
-    val_loss = data["val_loss"]
+    accuracy = data["accuracy"]
+    val_accuracy = data["val_accuracy"]
 
     # create plot
     fig, ax = plt.subplots()
@@ -85,8 +85,8 @@ Optimizer-{config.augmentation}Augmentation_lrate{config.learningrate}_mom{confi
     accuracy = data["accuracy"]
     val_accuracy = data["val_accuracy"]
     epochs_range = range(len(data.index))
-    ax.plot(epochs_range, loss, label="training loss", linestyle="dotted")
-    ax.plot(epochs_range, val_accuracy, label="validation loss", linestyle="dashed")
+    ax.plot(epochs_range, accuracy, label="training accuracy", linestyle="dotted")
+    ax.plot(epochs_range, val_accuracy, label="validation accuracy", linestyle="dashed")
 
     # draw boilerplate
     ax.set(

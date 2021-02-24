@@ -71,21 +71,27 @@ def create_model(config, train_ds, val_ds, kfold = 0):
         )
        
     # train the model and record the history of relevant data over the epochs
-	begintime = time.time()
+    begintime = time.time()
     hist = model.fit(
         train_ds, epochs=config.epochs, callbacks=callbacks, validation_data=val_ds,
     )
-	endtime = time.time()
-	lapsedtimemillis = round((endtime - begintime) * 1000)
-    log.info(f"Training completed in {lapsedtime} seconds")                                                   
+    endtime = time.time()
+    lapsedtimemillis = round((endtime - begintime) * 1000)
+    log.info(f"Training completed in {lapsedtimemillis} milliseconds")
 
-
-    log.info("Saving history of loss...")                                       
+    log.info("Saving history of accuracy...")                                       
     hist_df = pd.DataFrame.from_dict(hist.history) 
     if config.crossvalidation:
-        hist_df.to_csv(f"./model_training_history/Foldnr{kfold}_{config.epochs}Epochs_{config.activation}Activation-{config.optimizer}Optimizer-{config.augmentation}Augmentation_lrate{config.learningrate}_mom{config.momentum}_{lapsedtimemillis}millis-history.csv")  
+        filepath = f"./model_training_history/Foldnr{kfold}_{config.epochs}Epochs_{config.activation}Activation-{config.optimizer}Optimizer-{config.augmentation}Augmentation_lrate{config.learningrate}_mom{config.momentum}" 
     else:
-        hist_df.to_csv(f"./model_training_history/{config.epochs}Epochs_{config.activation}Activation-{config.optimizer}Optimizer-{config.augmentation}Augmentation_lrate{config.learningrate}_mom{config.momentum}_{lapsedtimemillis}millis-history.csv")  
+        filepath = f"./model_training_history/{config.epochs}Epochs_{config.activation}Activation-{config.optimizer}Optimizer-{config.augmentation}Augmentation_lrate{config.learningrate}_mom{config.momentum}"
+    hist_df.to_csv(filepath + "-history.csv")
+
+    # write lapsed time in millis to file:
+    f = open(filepath + "-lapsedtimemillis.txt", "a")
+    f.write(f"Training took: \n{lapsedtimemillis}\nmilliseconds")
+    f.close()
+
     return model
     
     
