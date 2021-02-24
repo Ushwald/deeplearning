@@ -19,3 +19,26 @@ crossvalidation_plots:
 			python generate_plot.py --epochs=$(EPOCHS) --crossvalidation=True --learningrate=$$LR --momentum=$$MOM --activation=elu ;\
 		done ;\
 	done
+
+
+
+final_experiments:
+			python main.py --epochs=$(EPOCHS)  --learningrate=0.01 --momentum=0.5 --optimizer=sgdm --activation=elu --augmentation=True ;\
+			python main.py --epochs=$(EPOCHS)  --learningrate=0.01 --momentum=0.5 --optimizer=rms --activation=elu --augmentation=True ;\
+			python main.py --epochs=$(EPOCHS)  --learningrate=0.05 --momentum=0.5 --optimizer=rms --activation=relu --augmentation=True ;\
+			python main.py --epochs=$(EPOCHS)  --learningrate=0.1 --momentum=0.0 --optimizer=sgdm --activation=relu --augmentation=True ;\
+			python main.py --epochs=$(EPOCHS)  --learningrate=0.01 --momentum=0.5 --optimizer=sgdm --activation=elu ;\
+			python main.py --epochs=$(EPOCHS)  --learningrate=0.01 --momentum=0.5 --optimizer=rms --activation=elu ;\
+			python main.py --epochs=$(EPOCHS)  --learningrate=0.05 --momentum=0.5 --optimizer=rms --activation=relu ;\
+			python main.py --epochs=$(EPOCHS)  --learningrate=0.1 --momentum=0.0 --optimizer=sgdm --activation=relu ;\
+
+final_plots:
+			python generate_plot.py --epochs=$(EPOCHS)  --learningrate=0.01 --momentum=0.5 --optimizer=sgdm --activation=elu --augmentation=True ;\
+			python generate_plot.py --epochs=$(EPOCHS)  --learningrate=0.01 --momentum=0.5 --optimizer=rms --activation=elu --augmentation=True ;\
+			python generate_plot.py --epochs=$(EPOCHS)  --learningrate=0.05 --momentum=0.5 --optimizer=rms --activation=relu --augmentation=True ;\
+			python generate_plot.py --epochs=$(EPOCHS)  --learningrate=0.1 --momentum=0.0 --optimizer=sgdm --activation=relu --augmentation=True ;\
+			python generate_plot.py --epochs=$(EPOCHS)  --learningrate=0.01 --momentum=0.5 --optimizer=sgdm --activation=elu ;\
+			python generate_plot.py --epochs=$(EPOCHS)  --learningrate=0.01 --momentum=0.5 --optimizer=rms --activation=elu ;\
+			python generate_plot.py --epochs=$(EPOCHS)  --learningrate=0.05 --momentum=0.5 --optimizer=rms --activation=relu ;\
+			python generate_plot.py --epochs=$(EPOCHS)  --learningrate=0.1 --momentum=0.0 --optimizer=sgdm --activation=relu ;\
+

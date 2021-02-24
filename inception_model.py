@@ -3,6 +3,7 @@ from tensorflow import keras
 import logger
 from inception_custom import InceptionCustom
 import pandas as pd
+import time
 
 log = logger.setup_logger(__name__)
 
@@ -70,18 +71,21 @@ def create_model(config, train_ds, val_ds, kfold = 0):
         )
        
     # train the model and record the history of relevant data over the epochs
+	begintime = time.time()
     hist = model.fit(
         train_ds, epochs=config.epochs, callbacks=callbacks, validation_data=val_ds,
     )
-    log.info("Training done")                                                   
+	endtime = time.time()
+	lapsedtimemillis = round((endtime - begintime) * 1000)
+    log.info(f"Training completed in {lapsedtime} seconds")                                                   
 
 
     log.info("Saving history of loss...")                                       
     hist_df = pd.DataFrame.from_dict(hist.history) 
     if config.crossvalidation:
-        hist_df.to_csv(f"./model_training_history/Foldnr{kfold}_{config.epochs}Epochs_{config.activation}Activation-{config.optimizer}Optimizer-{config.augmentation}Augmentation_lrate{config.learningrate}_mom{config.momentum}-history.csv")  
+        hist_df.to_csv(f"./model_training_history/Foldnr{kfold}_{config.epochs}Epochs_{config.activation}Activation-{config.optimizer}Optimizer-{config.augmentation}Augmentation_lrate{config.learningrate}_mom{config.momentum}_{lapsedtimemillis}millis-history.csv")  
     else:
-        hist_df.to_csv(f"./model_training_history/{config.epochs}Epochs_{config.activation}Activation-{config.optimizer}Optimizer-{config.augmentation}Augmentation_lrate{config.learningrate}_mom{config.momentum}-history.csv")  
+        hist_df.to_csv(f"./model_training_history/{config.epochs}Epochs_{config.activation}Activation-{config.optimizer}Optimizer-{config.augmentation}Augmentation_lrate{config.learningrate}_mom{config.momentum}_{lapsedtimemillis}millis-history.csv")  
     return model
     
     
