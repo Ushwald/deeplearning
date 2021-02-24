@@ -1,5 +1,6 @@
 import matplotlib.pyplot as plt
 import pandas as pd
+import logger
 from argument_parser import setup_argument_parser
 import os
 import seaborn as sns
@@ -13,26 +14,26 @@ def main():
     else:
         plot(config)
     
-    print(data.head())
-    plot(data)
+    
 
 def plot_crossvalidation(config):
     fig, ax = plt.subplots()
-    palette = sns.color_palette(5)
+    palette = sns.color_palette(n_colors=5)
 
     for kfold in range(5):
             # Plot lines for training and validation accuracies for all folds:
             fp = f"model_training_history/Foldnr{kfold+1}_{config.epochs}Epochs_{config.activation}Activation-{config.optimizer}\
-            Optimizer-{config.augmentation}Augmentation_lrate{config.learningrate}_mom{config.momentum}-history.csv"
+Optimizer-{config.augmentation}Augmentation_lrate{config.learningrate}_mom{config.momentum}-history.csv"
             try:
                 data = pd.read_csv(fp, sep = ',')
             except:
-                log.error("kfold crossvalidation history csv files were not successfully opened")
+                log.error(f"kfold crossvalidation history csv files were not successfully opened (file: {fp})")
+            
 
             accuracy = data["accuracy"]
             val_accuracy = data["val_accuracy"]
             epochs_range = range(len(data.index))
-            ax.plot(epochs_range, loss, label="training loss", linestyle="dotted",color = palette[kfold])
+            ax.plot(epochs_range, accuracy, label="training loss", linestyle="dotted",color = palette[kfold])
             ax.plot(epochs_range, val_accuracy, label="validation loss", linestyle="dashed", color = palette[kfold])
 
     ax.set(
@@ -43,15 +44,24 @@ def plot_crossvalidation(config):
     else:
         optimstr = "SGD"
         
-    caption(f"5-fold crossvalidation with settings: Activation: {config.activation}, Optimizer: {optimstr}, \
-Learning rate: {config.learningrate}, Momentum: {config.momentum}")
+    caption = f"5-fold crossvalidation with settings: Activation: {config.activation}, Optimizer: {optimstr}, \
+Learning rate: {config.learningrate}, Momentum: {config.momentum}"
     fig.text(0.5, 0.02, caption, ha="center", style="italic")
     plt.legend(loc="upper right")
     ax.grid()
     fig.subplots_adjust(bottom=0.2)
 
-    fig.savefig(f"./crossvalidation_results/{config.epochs}Epochs_{config.activation}Activation-{config.optimizer}\
-    Optimizer-{config.augmentation}Augmentation_lrate{config.learningrate}_mom{config.momentum}.jpg")
+    try:
+        os.mkdir(f"./crossvalidation_results/plots")
+    except:
+        log.info("Folder plots already existed")
+    try:
+        os.mkdir(f"./crossvalidation_results/plots/{config.activation}_activation_{config.optimizer}_optimizer")
+    except:
+        log.info("Folder already existed")
+
+    fig.savefig(f"./crossvalidation_results/plots/{config.activation}_activation_{config.optimizer}_optimizer/{config.epochs}Epochs_{config.activation}Activation-{config.optimizer}\
+Optimizer-{config.augmentation}Augmentation_lrate{config.learningrate}_mom{config.momentum}.jpg")
 
 
 def plot(data):
@@ -71,7 +81,7 @@ Optimizer-{config.augmentation}Augmentation_lrate{config.learningrate}_mom{confi
     # create plot
     fig, ax = plt.subplots()
 
-    # apply data
+    # apply datak
     accuracy = data["accuracy"]
     val_accuracy = data["val_accuracy"]
     epochs_range = range(len(data.index))
