@@ -1,5 +1,8 @@
 import tensorflow as tf
 
+from tensorflow import keras
+from tensorflow.keras import layers
+
 import logger
 import os
 
@@ -51,7 +54,17 @@ def create_dataset(config, val_split = 0.2):
         )
 
     if config.augmentation:
-        #Do whatever is necessary for augmentation
-        log.warning("Augmentation should be performed (but is not yet implemented)")
+        data_augmentation = keras.Sequential(
+            [
+                layers.experimental.preprocessing.RandomFlip("horizontal"),
+                layers.experimental.preprocessing.RandomRotation(0.1),
+            ]
+        )
+
+        augmented_train_ds = train_ds.map(
+        lambda x, y: (data_augmentation(x, training=True), y))
+
+    train_ds = train_ds.prefetch(buffer_size=32)
+    val_ds = val_ds.prefetch(buffer_size=32)
 
     return (train_ds, val_ds)
