@@ -63,6 +63,7 @@ def create_dataset(config, val_split = 0.2):
 
         augmented_train_ds = train_ds.map(
         lambda x, y: (data_augmentation(x, training=True), y))
+        train_ds = augmented_train_ds
 
     train_ds = train_ds.prefetch(buffer_size=32)
     val_ds = val_ds.prefetch(buffer_size=32)
