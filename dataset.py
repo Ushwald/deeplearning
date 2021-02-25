@@ -59,34 +59,33 @@ def create_dataset(config, val_split = 0.2):
     alldata = alldata.sample(frac=1).reset_index(drop=True) 
     Y = alldata[['label']]
 
-    idg = ImageDataGenerator(width_shift_range=0.0,
-                         height_shift_range=0.0,
-                         zoom_range=0.0,
-                         fill_mode='nearest',
-                         horizontal_flip = False,
-                         rescale=None)
+    #optional augmentation applied through idg:
+    if config.augmentation:
+        idg = ImageDataGenerator(width_shift_range=0.0,
+                            height_shift_range=0.0,
+                            zoom_range=0.0,
+                            rotation_range=36
+                            fill_mode='nearest',
+                            horizontal_flip = True,
+                            rescale=None)
+    else:
+        idg = ImageDataGenerator(width_shift_range=0.0,
+                            height_shift_range=0.0,
+                            zoom_range=0.0,
+                            fill_mode='nearest',
+                            horizontal_flip = True,
+                            rescale=None)
 
+    val_idg = keras.preprocessing.image.ImageDataGenerator()
+  
 
     for train_index, val_index in kf.split(np.zeros(len(Y)), Y):
         training_data = alldata.iloc[train_index]
         validation_data = alldata.iloc[val_index]
 
         train_ds = idg.flow_from_dataframe(training_data, target_size = (180, 180), directory = 'PetImages', x_col = "filename", y_col = "label", class_mode = "categorical", shuffle = True)
-        val_ds  = idg.flow_from_dataframe(validation_data, target_size = (180, 180), directory = 'PetImages', x_col = "filename", y_col = "label", class_mode = "categorical", shuffle =True)
+        val_ds  = val_idg.flow_from_dataframe(validation_data, target_size = (180, 180), directory = 'PetImages', x_col = "filename", y_col = "label", class_mode = "categorical", shuffle =True)
         break
-    #augmentation:
-
-    if config.augmentation:
-        data_augmentation = keras.Sequential(
-            [
-                layers.experimental.preprocessing.RandomFlip("horizontal"),
-                layers.experimental.preprocessing.RandomRotation(0.1),
-            ]
-        )
-
-        augmented_train_ds = train_ds.map(
-        lambda x, y: (data_augmentation(x, training=True), y))
-        train_ds = augmented_train_ds
 
 
     return (train_ds, val_ds)
