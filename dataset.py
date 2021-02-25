@@ -64,7 +64,7 @@ def create_dataset(config, val_split = 0.2):
         idg = ImageDataGenerator(width_shift_range=0.0,
                             height_shift_range=0.0,
                             zoom_range=0.0,
-                            rotation_range=36
+                            rotation_range=36,
                             fill_mode='nearest',
                             horizontal_flip = True,
                             rescale=None)
