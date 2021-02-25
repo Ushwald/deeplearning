@@ -84,7 +84,7 @@ def create_dataset(config, val_split = 0.2):
             ]
         )
 
-        augmented_git atrain_ds = train_ds.map(
+        augmented_train_ds = train_ds.map(
         lambda x, y: (data_augmentation(x, training=True), y))
         train_ds = augmented_train_ds
 
