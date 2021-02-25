@@ -64,9 +64,9 @@ Learning rate: {config.learningrate}, Momentum: {config.momentum}"
 Optimizer-{config.augmentation}Augmentation_lrate{config.learningrate}_mom{config.momentum}.jpg")
 
 
-def plot(data):
+def plot(config):
     # data
-    fp = f"model_training_history/Foldnr{kfold+1}_{config.epochs}Epochs_{config.activation}Activation-{config.optimizer}\
+    fp = f"model_training_history/{config.epochs}Epochs_{config.activation}Activation-{config.optimizer}\
 Optimizer-{config.augmentation}Augmentation_lrate{config.learningrate}_mom{config.momentum}-history.csv"
 
     try:
@@ -97,8 +97,8 @@ Optimizer-{config.augmentation}Augmentation_lrate{config.learningrate}_mom{confi
     else:
         optimstr = "SGD"
 
-    caption(f"Accuracies with settings: Activation: {config.activation}, Optimizer: {optimstr}, \
-Learning rate: {config.learningrate}, Momentum: {config.momentum}, Augmentation = {config.augmentation}")
+    caption = f"Accuracies with settings: Activation: {config.activation}, Optimizer: {optimstr}, \
+Learning rate: {config.learningrate}, Momentum: {config.momentum}, Augmentation = {config.augmentation}"
     fig.text(0.5, 0.02, caption, ha="center", style="italic")
 
     plt.legend(loc="upper right")
@@ -107,6 +107,10 @@ Learning rate: {config.learningrate}, Momentum: {config.momentum}, Augmentation 
     ax.grid()
     fig.subplots_adjust(bottom=0.2)
     # show and export
+    try:
+        os.mkdir("./results/")
+    except:
+        log.info('results folder already existed')
     fig.savefig(f"./results/{config.epochs}Epochs_{config.activation}Activation-{config.optimizer}\
     Optimizer-{config.augmentation}Augmentation_lrate{config.learningrate}_mom{config.momentum}.jpg")
 

@@ -1,4 +1,4 @@
-EPOCHS = 50
+EPOCHS = 100
 
 crossvalidation_experiments:
 	for LR in 0.001 0.01 0.05 0.1 ; do \
