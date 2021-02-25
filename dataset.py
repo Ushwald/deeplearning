@@ -33,25 +33,34 @@ def create_dataset(config, val_split = 0.2):
 
     if config.crossvalidation:
         log.warning("Crossvalidation is used, but not implemented in this way, turn around now!")    
-    else:
-        train_ds = tf.keras.preprocessing.image_dataset_from_directory(
-                "PetImages",
-                validation_split=val_split,
-                subset="training",
-                label_mode = "categorical",
-                seed=1337,
-                image_size=image_size,
-                batch_size=batch_size,
-            )
-        val_ds = tf.keras.preprocessing.image_dataset_from_directory(
-            "PetImages",
-            validation_split=val_split,
-            subset="validation",
-            label_mode = "categorical",
-            seed=1337,
-            image_size=image_size,
-            batch_size=batch_size,
-        )
+    kf = KFold(n_splits = 5)
+
+    filenames = []
+    labels = []
+      
+
+    for file in os.listdir('PetImages/Cat'):
+        filenames.append(os.path.join('Cat', file))
+        labels.append('Cat')
+
+    for file in os.listdir('PetImages/Dog'):
+        filenames.append(os.path.join('Dog', file))
+        labels.append('Dog')
+
+
+    d = {'filename': filenames, 'label': labels}
+    alldata = pd.DataFrame(d)
+    alldata = alldata.sample(frac=1).reset_index(drop=True) 
+    Y = alldata[['label']]
+
+    train_index, val_index = kf.split(np.zeros(len(Y)), Y)[0]:
+    training_data = alldata.iloc[train_index]
+    validation_data = alldata.iloc[val_index]
+
+    train_ds = idg.flow_from_dataframe(training_data, target_size = (180, 180), directory = 'PetImages', x_col = "filename", y_col = "label", class_mode = "categorical", shuffle = False)
+    val_ds  = idg.flow_from_dataframe(validation_data, target_size = (180, 180), directory = 'PetImages', x_col = "filename", y_col = "label", class_mode = "categorical", shuffle =False)
+
+    #augmentation:
 
     if config.augmentation:
         data_augmentation = keras.Sequential(

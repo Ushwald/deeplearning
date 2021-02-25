@@ -42,3 +42,6 @@ final_plots:
 			python generate_plot.py --epochs=$(EPOCHS)  --learningrate=0.05 --momentum=0.5 --optimizer=rms --activation=relu ;\
 			python generate_plot.py --epochs=$(EPOCHS)  --learningrate=0.1 --momentum=0.0 --optimizer=sgdm --activation=relu ;\
 
+experiment:
+			python main.py --epochs=$(EPOCHS)  --learningrate=0.01 --momentum=0.5 --augmentation=True ;\
+			python main.py --epochs=$(EPOCHS)  --learningrate=0.01 --momentum=0.5 ;\
