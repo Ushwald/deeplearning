@@ -44,4 +44,4 @@ final_plots:
 
 experiment:
 			python main.py --epochs=$(EPOCHS)  --learningrate=0.01 --momentum=0.5 --augmentation=True ;\
-			python main.py --epochs=$(EPOCHS)  --learningrate=0.01 --momentum=0.5 git add;\
+			python main.py --epochs=$(EPOCHS)  --learningrate=0.01 --momentum=0.5 ;\
