@@ -72,7 +72,7 @@ Optimizer-{config.augmentation}Augmentation_lrate{config.learningrate}_mom{confi
     try:
         data = pd.read_csv(fp, sep = ',')
     except:
-        log.error("kfold crossvalidation history csv files were not successfully opened")
+        log.error(f"history csv files were not successfully opened (filepath: {fp})")
 
     epochs_range = range(len(data.index))
     accuracy = data["accuracy"]

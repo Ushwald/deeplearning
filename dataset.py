@@ -71,8 +71,8 @@ def create_dataset(config, val_split = 0.2):
         training_data = alldata.iloc[train_index]
         validation_data = alldata.iloc[val_index]
 
-        train_ds = idg.flow_from_dataframe(training_data, target_size = (180, 180), directory = 'PetImages', x_col = "filename", y_col = "label", class_mode = "categorical", shuffle = False)
-        val_ds  = idg.flow_from_dataframe(validation_data, target_size = (180, 180), directory = 'PetImages', x_col = "filename", y_col = "label", class_mode = "categorical", shuffle =False)
+        train_ds = idg.flow_from_dataframe(training_data, target_size = (180, 180), directory = 'PetImages', x_col = "filename", y_col = "label", class_mode = "categorical", shuffle = True)
+        val_ds  = idg.flow_from_dataframe(validation_data, target_size = (180, 180), directory = 'PetImages', x_col = "filename", y_col = "label", class_mode = "categorical", shuffle =True)
         break
     #augmentation:
 
@@ -84,7 +84,7 @@ def create_dataset(config, val_split = 0.2):
             ]
         )
 
-        augmented_train_ds = train_ds.map(
+        augmented_git atrain_ds = train_ds.map(
         lambda x, y: (data_augmentation(x, training=True), y))
         train_ds = augmented_train_ds
 
