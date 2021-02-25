@@ -1,4 +1,4 @@
-EPOCHS = 100
+EPOCHS = 99
 
 crossvalidation_experiments:
 	for LR in 0.001 0.01 0.05 0.1 ; do \
@@ -44,4 +44,4 @@ final_plots:
 
 experiment:
 			python main.py --epochs=$(EPOCHS)  --learningrate=0.01 --momentum=0.5 --augmentation=True ;\
-			python main.py --epochs=$(EPOCHS)  --learningrate=0.01 --momentum=0.5 ;\
+			python main.py --epochs=$(EPOCHS)  --learningrate=0.01 --momentum=0.5 git add;\
