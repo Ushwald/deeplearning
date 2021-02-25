@@ -2,6 +2,12 @@ import tensorflow as tf
 
 from tensorflow import keras
 from tensorflow.keras import layers
+from sklearn.model_selection import KFold, StratifiedKFold
+import pandas as pd
+from tensorflow.keras.preprocessing.image import ImageDataGenerator
+
+import numpy as np
+
 
 import logger
 import os
@@ -33,39 +39,53 @@ def create_dataset(config, val_split = 0.2):
 
     if config.crossvalidation:
         log.warning("Crossvalidation is used, but not implemented in this way, turn around now!")    
-    else:
-        train_ds = tf.keras.preprocessing.image_dataset_from_directory(
-                "PetImages",
-                validation_split=val_split,
-                subset="training",
-                label_mode = "categorical",
-                seed=1337,
-                image_size=image_size,
-                batch_size=batch_size,
-            )
-        val_ds = tf.keras.preprocessing.image_dataset_from_directory(
-            "PetImages",
-            validation_split=val_split,
-            subset="validation",
-            label_mode = "categorical",
-            seed=1337,
-            image_size=image_size,
-            batch_size=batch_size,
-        )
+    kf = KFold(n_splits = 5)
 
+    filenames = []
+    labels = []
+      
+
+    for file in os.listdir('PetImages/Cat'):
+        filenames.append(os.path.join('Cat', file))
+        labels.append('Cat')
+
+    for file in os.listdir('PetImages/Dog'):
+        filenames.append(os.path.join('Dog', file))
+        labels.append('Dog')
+
+
+    d = {'filename': filenames, 'label': labels}
+    alldata = pd.DataFrame(d)
+    alldata = alldata.sample(frac=1).reset_index(drop=True) 
+    Y = alldata[['label']]
+
+    #optional augmentation applied through idg:
     if config.augmentation:
-        data_augmentation = keras.Sequential(
-            [
-                layers.experimental.preprocessing.RandomFlip("horizontal"),
-                layers.experimental.preprocessing.RandomRotation(0.1),
-            ]
-        )
+        idg = ImageDataGenerator(width_shift_range=0.0,
+                            height_shift_range=0.0,
+                            zoom_range=0.0,
+                            rotation_range=36,
+                            fill_mode='nearest',
+                            horizontal_flip = True,
+                            rescale=None)
+    else:
+        idg = ImageDataGenerator(width_shift_range=0.0,
+                            height_shift_range=0.0,
+                            zoom_range=0.0,
+                            fill_mode='nearest',
+                            horizontal_flip = True,
+                            rescale=None)
 
-        augmented_train_ds = train_ds.map(
-        lambda x, y: (data_augmentation(x, training=True), y))
-        train_ds = augmented_train_ds
+    val_idg = keras.preprocessing.image.ImageDataGenerator()
+  
 
-    train_ds = train_ds.prefetch(buffer_size=32)
-    val_ds = val_ds.prefetch(buffer_size=32)
+    for train_index, val_index in kf.split(np.zeros(len(Y)), Y):
+        training_data = alldata.iloc[train_index]
+        validation_data = alldata.iloc[val_index]
+
+        train_ds = idg.flow_from_dataframe(training_data, target_size = (180, 180), directory = 'PetImages', x_col = "filename", y_col = "label", class_mode = "categorical", shuffle = True)
+        val_ds  = val_idg.flow_from_dataframe(validation_data, target_size = (180, 180), directory = 'PetImages', x_col = "filename", y_col = "label", class_mode = "categorical", shuffle =True)
+        break
+
 
     return (train_ds, val_ds)

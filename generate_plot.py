@@ -4,6 +4,7 @@ import logger
 from argument_parser import setup_argument_parser
 import os
 import seaborn as sns
+from matplotlib.lines import Line2D
 
 log = logger.setup_logger(__name__)
 
@@ -44,10 +45,14 @@ Optimizer-{config.augmentation}Augmentation_lrate{config.learningrate}_mom{confi
     else:
         optimstr = "SGD"
         
-    caption = f"5-fold crossvalidation with settings: Activation: {config.activation}, Optimizer: {optimstr}, \
-Learning rate: {config.learningrate}, Momentum: {config.momentum}"
+    caption = f"5-fold crossvalidation with settings: Activation: {config.activation},\n\
+Optimizer: {optimstr}, Learning rate: {config.learningrate}, Momentum: {config.momentum}"
     fig.text(0.5, 0.02, caption, ha="center", style="italic")
-    plt.legend(loc="upper right")
+
+    #custom legend:
+    custom_lines = [Line2D([0], [0], color='grey', lw=4, linestyle = 'dotted'),
+                    Line2D([0], [0], color='grey', lw=4, linestyle = 'dashed')]
+    plt.legend(custom_lines, ['Training', 'Validation'], loc="upper left")
     ax.grid()
     fig.subplots_adjust(bottom=0.2)
 
@@ -72,7 +77,7 @@ Optimizer-{config.augmentation}Augmentation_lrate{config.learningrate}_mom{confi
     try:
         data = pd.read_csv(fp, sep = ',')
     except:
-        log.error("kfold crossvalidation history csv files were not successfully opened")
+        log.error(f"history csv files were not successfully opened (filepath: {fp})")
 
     epochs_range = range(len(data.index))
     accuracy = data["accuracy"]
@@ -97,11 +102,11 @@ Optimizer-{config.augmentation}Augmentation_lrate{config.learningrate}_mom{confi
     else:
         optimstr = "SGD"
 
-    caption = f"Accuracies with settings: Activation: {config.activation}, Optimizer: {optimstr}, \
+    caption = f"Accuracies with settings: Activation: {config.activation}, Optimizer: {optimstr}, \n\
 Learning rate: {config.learningrate}, Momentum: {config.momentum}, Augmentation = {config.augmentation}"
     fig.text(0.5, 0.02, caption, ha="center", style="italic")
 
-    plt.legend(loc="upper right")
+    plt.legend(loc="upper left")
 
     # stylize
     ax.grid()
