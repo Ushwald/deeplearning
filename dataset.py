@@ -2,6 +2,12 @@ import tensorflow as tf
 
 from tensorflow import keras
 from tensorflow.keras import layers
+from sklearn.model_selection import KFold, StratifiedKFold
+import pandas as pd
+from tensorflow.keras.preprocessing.image import ImageDataGenerator
+
+import numpy as np
+
 
 import logger
 import os
@@ -53,13 +59,21 @@ def create_dataset(config, val_split = 0.2):
     alldata = alldata.sample(frac=1).reset_index(drop=True) 
     Y = alldata[['label']]
 
-    train_index, val_index = kf.split(np.zeros(len(Y)), Y)[0]:
-    training_data = alldata.iloc[train_index]
-    validation_data = alldata.iloc[val_index]
+    idg = ImageDataGenerator(width_shift_range=0.0,
+                         height_shift_range=0.0,
+                         zoom_range=0.0,
+                         fill_mode='nearest',
+                         horizontal_flip = False,
+                         rescale=None)
 
-    train_ds = idg.flow_from_dataframe(training_data, target_size = (180, 180), directory = 'PetImages', x_col = "filename", y_col = "label", class_mode = "categorical", shuffle = False)
-    val_ds  = idg.flow_from_dataframe(validation_data, target_size = (180, 180), directory = 'PetImages', x_col = "filename", y_col = "label", class_mode = "categorical", shuffle =False)
 
+    for train_index, val_index in kf.split(np.zeros(len(Y)), Y):
+        training_data = alldata.iloc[train_index]
+        validation_data = alldata.iloc[val_index]
+
+        train_ds = idg.flow_from_dataframe(training_data, target_size = (180, 180), directory = 'PetImages', x_col = "filename", y_col = "label", class_mode = "categorical", shuffle = False)
+        val_ds  = idg.flow_from_dataframe(validation_data, target_size = (180, 180), directory = 'PetImages', x_col = "filename", y_col = "label", class_mode = "categorical", shuffle =False)
+        break
     #augmentation:
 
     if config.augmentation:
@@ -74,7 +88,5 @@ def create_dataset(config, val_split = 0.2):
         lambda x, y: (data_augmentation(x, training=True), y))
         train_ds = augmented_train_ds
 
-    train_ds = train_ds.prefetch(buffer_size=32)
-    val_ds = val_ds.prefetch(buffer_size=32)
 
     return (train_ds, val_ds)
